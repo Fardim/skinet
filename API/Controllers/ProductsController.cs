@@ -13,6 +13,7 @@ using AutoMapper;
 using API.Dtos;
 using API.Errors;
 using System.Net;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -31,13 +32,15 @@ namespace API.Controllers
             this._mapper = mapper;
         }
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts()
+        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery]ProductSpecParams productParams)
         {
-            var spec = new ProductWithTypesAndBrandSpecification();
+            var spec = new ProductWithTypesAndBrandSpecification(productParams);
+            var countSpec = new ProductWithFiltersForCountSpecification(productParams);
             var products = await _productRepo.ListAsync(spec);
+            var totalItems = await _productRepo.CountAsync(countSpec);
             //var productsToReturn = products.Select(prod => _mapper.Map<Product, ProductToReturnDto>(prod)).ToList();
             var productsToReturn = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
-            return Ok(productsToReturn);
+            return Ok(new Pagination<ProductToReturnDto>(productParams.PageSize, productParams.PageIndex, totalItems, productsToReturn));
         }
 
         [HttpGet("{id:int}")]
