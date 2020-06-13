@@ -1,6 +1,6 @@
 <div class="container">
 	<div class="row">
-		<section class="col-3">
+		<section class="col-3 sticky-top">
 			<h5 class="text-warning ml-3">Sort</h5>
 			<select name="sort" id="sort" class="custom-select mb-3" (change)="onSortSelected($event.target.value)">
 				<option [value]="sort.value" *ngFor="let sort of sortOptions">{{ sort.name }}</option>
