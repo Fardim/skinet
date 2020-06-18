@@ -43,11 +43,17 @@ namespace API.Controllers
             return Ok(new Pagination<ProductToReturnDto>(productParams.PageSize, productParams.PageIndex, totalItems, productsToReturn));
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse),StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
+            if(!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(v=> v.ErrorMessage);
+                var errorResponse = new ApiValidationErrorResponse { Errors = errors };
+                return new BadRequestObjectResult(errorResponse);
+            }
             var spec = new ProductWithTypesAndBrandSpecification(id);
             var product = await _productRepo.GetEntityWithSpec(spec);
             if(product == null)
