@@ -5,6 +5,7 @@ using API.Middleware;
 using AutoMapper;
 using Core.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -33,12 +34,17 @@ namespace API
             {
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlite(Configuration.GetConnectionString("IdentityConnection"));
+            });
             services.AddSingleton<IConnectionMultiplexer>(c =>
             {
                 var configurationOption = ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"), true);
                 return ConnectionMultiplexer.Connect(configurationOption);
             });
             services.AddApplicationServices();
+            services.AddIdentityServices(Configuration);
             //services.AddScoped<IProductRepository, ProductRepository>();
             //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddAutoMapper(typeof(MappingProfiles));
@@ -94,6 +100,8 @@ namespace API
 
             //Before app.UseAuthorization();
             app.UseCors("CorsPolicy");
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

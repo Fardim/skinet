@@ -1,0 +1,3 @@
+﻿# Add-migration initialMigration -Context AppIdentityDbContext
+
+# Remove-Migration -Context AppIdentityDbContext
