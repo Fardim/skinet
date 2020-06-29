@@ -1,3 +1,4 @@
+import { SharedModule } from './../shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -19,6 +20,7 @@ import { BreadcrumbModule } from 'xng-breadcrumb';
 			preventDuplicates: true,
 		}),
 		BreadcrumbModule,
+		SharedModule,
 	],
 	exports: [NavBarComponent, SectionHeaderComponent],
 })
